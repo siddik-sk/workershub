@@ -11,7 +11,7 @@ export default function UnauthorizedPage() {
   useDocumentTitle('Access denied');
 
   const home = user?.role === 'admin' ? '/admin' : user?.role === 'worker' ? '/worker' : '/app';
-  const loginPath = user?.role === 'admin' ? '/admin/login' : user?.role === 'worker' ? '/worker/login' : '/login';
+  const loginPath = user?.role === 'worker' ? '/worker/login' : '/login';
 
   return (
     <div className="grid min-h-screen place-items-center bg-navy-50/40 px-4 py-12">

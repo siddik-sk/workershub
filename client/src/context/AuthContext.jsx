@@ -56,12 +56,7 @@ export function AuthProvider({ children }) {
 
   const login = useCallback(
     async (role, credentials) => {
-      const request =
-        role === 'worker'
-          ? authApi.loginWorker
-          : role === 'admin'
-            ? authApi.loginAdmin
-            : authApi.loginCustomer;
+      const request = role === 'worker' ? authApi.loginWorker : authApi.loginCustomer;
       const response = await request(credentials);
       applySession(response.data);
       return response.data;

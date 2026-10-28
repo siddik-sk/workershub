@@ -44,22 +44,6 @@ const configs = {
       { icon: ShieldCheck, title: 'Admin-reviewed applications', text: 'Approved profiles appear in local search results.' },
     ],
   },
-  admin: {
-    title: 'Administrator sign in',
-    subtitle: 'Secure access to platform analytics, approvals and operational controls.',
-    badge: 'Restricted access',
-    endpoint: '/admin/login',
-    home: '/admin',
-    registerText: '',
-    registerLink: '',
-    registerLabel: '',
-    titleText: 'Admin login',
-    headline: 'Operate the platform with complete visibility.',
-    description: 'Review worker applications, monitor bookings and keep the marketplace safe for customers and professionals.',
-    bullets: [
-      { icon: ShieldCheck, title: 'Audited administrative actions', text: 'Every operational change is recorded.' },
-    ],
-  },
 };
 
 export default function LoginPage({ role = 'customer' }) {
@@ -109,8 +93,13 @@ export default function LoginPage({ role = 'customer' }) {
       const data = await login(role, form);
       toast.success(`Welcome back, ${data.user.name.split(' ')[0]}!`);
       const from = location.state?.from;
-      const safeFrom = typeof from === 'string' && from.startsWith('/') && !from.startsWith('//') ? from : null;
       const defaultHome = data.user.role === 'admin' ? '/admin' : data.user.role === 'worker' ? '/worker' : '/app';
+      const safeFrom =
+        typeof from === 'string' &&
+        from.startsWith(`${defaultHome}/`) &&
+        !from.startsWith('//')
+          ? from
+          : null;
       navigate(safeFrom || defaultHome, { replace: true });
     } catch (error) {
       setServerError(getErrorMessage(error, 'Unable to sign in'));
@@ -120,10 +109,9 @@ export default function LoginPage({ role = 'customer' }) {
   }
 
   return (
-    <AuthShell eyebrow={role === 'admin' ? 'Platform administration' : 'Welcome back'} headline={config.headline} description={config.description} bullets={config.bullets}>
+    <AuthShell eyebrow="Welcome back" headline={config.headline} description={config.description} bullets={config.bullets}>
       <div className="mb-6">
         <span className="inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-navy-50 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider text-navy-600">
-          {role === 'admin' && <ShieldCheck className="h-3 w-3" />}
           {config.badge}
         </span>
         <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-navy-900">{config.title}</h1>
@@ -160,9 +148,6 @@ export default function LoginPage({ role = 'customer' }) {
           <Link to="/forgot-password" className="text-sm font-semibold text-brand-700 hover:text-brand-800">
             Forgot password?
           </Link>
-          {role === 'admin' && (
-            <span className="text-xs text-navy-400">Admin accounts are created securely by CLI</span>
-          )}
         </div>
         <Button type="submit" className="w-full" loading={submitting} iconRight={ArrowRight}>
           Sign in
@@ -188,11 +173,6 @@ export default function LoginPage({ role = 'customer' }) {
         <p className="mt-2 text-center text-sm text-navy-500">
           Are you a professional?{' '}
           <Link to="/worker/login" className="font-semibold text-brand-700 hover:text-brand-800">Worker login</Link>
-        </p>
-      )}
-      {role === 'admin' && (
-        <p className="mt-6 text-center text-xs leading-relaxed text-navy-400">
-          This portal is restricted to authorised platform administrators. All access attempts are rate limited.
         </p>
       )}
     </AuthShell>

@@ -25,6 +25,7 @@ The application is not a static demo: accounts, sessions, bookings, notification
 - Receive real-time booking notifications while online and persistent notifications while offline.
 
 ### Administrators
+- Sign in through the standard `/login` page; there is no separate administrator login form.
 - Dashboard analytics for 7, 30 and 90-day ranges using aggregated MongoDB data.
 - Approve, reject or suspend workers, with reasons recorded in the audit log.
 - Suspend, reactivate and inspect customer, worker and admin accounts.
@@ -202,9 +203,8 @@ All responses use `{ success, message?, data? }`; errors use `{ success: false, 
 | `GET` | `/api/health` | Public | Service and database health |
 | `POST` | `/api/auth/register` | Public | Customer registration |
 | `POST` | `/api/auth/register/worker` | Public | Worker application |
-| `POST` | `/api/auth/login` | Public | Customer login |
+| `POST` | `/api/auth/login` | Public | Customer and administrator login |
 | `POST` | `/api/auth/login/worker` | Public | Worker login |
-| `POST` | `/api/auth/login/admin` | Public | Administrator login |
 | `GET` | `/api/auth/me` | Authenticated | Current session |
 | `POST` | `/api/auth/logout` | Public | Clear session cookie |
 | `POST` | `/api/auth/forgot-password` | Public | Request password reset |

@@ -181,7 +181,8 @@ async function login({ email, password, expectedRole }) {
   const matches = await bcrypt.compare(String(password), user.passwordHash);
   if (!matches) throw ApiError.unauthorized('Invalid email or password');
 
-  if (user.role !== expectedRole) {
+  const allowedRoles = Array.isArray(expectedRole) ? expectedRole : [expectedRole];
+  if (!allowedRoles.includes(user.role)) {
     throw ApiError.forbidden(
       'These credentials cannot be used on this login portal. Please use the correct account portal.'
     );

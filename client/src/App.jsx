@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { NotificationProvider } from './context/NotificationContext';
@@ -75,7 +75,7 @@ export default function App() {
 
               <Route path="login" element={<LoginPage role="customer" />} />
               <Route path="worker/login" element={<LoginPage role="worker" />} />
-              <Route path="admin/login" element={<LoginPage role="admin" />} />
+              <Route path="admin/login" element={<Navigate to="/login" replace />} />
               <Route path="register" element={<RegisterPage />} />
               <Route path="worker/register" element={<WorkerRegisterPage />} />
               <Route path="forgot-password" element={<ForgotPasswordPage />} />

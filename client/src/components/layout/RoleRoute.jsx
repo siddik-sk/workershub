@@ -5,7 +5,7 @@ import { PageLoader } from '../ui/Feedback';
 const loginPaths = {
   customer: '/login',
   worker: '/worker/login',
-  admin: '/admin/login',
+  admin: '/login',
 };
 
 export default function RoleRoute({ roles = [], children }) {

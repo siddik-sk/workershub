@@ -26,9 +26,14 @@ router.post(
   authController.registerWorker
 );
 
-router.post('/login', authLimiter, loginRules, validate, authController.loginHandler(ROLES.CUSTOMER));
+router.post(
+  '/login',
+  authLimiter,
+  loginRules,
+  validate,
+  authController.loginHandler([ROLES.CUSTOMER, ROLES.ADMIN])
+);
 router.post('/login/worker', authLimiter, loginRules, validate, authController.loginHandler(ROLES.WORKER));
-router.post('/login/admin', authLimiter, loginRules, validate, authController.loginHandler(ROLES.ADMIN));
 
 router.get('/me', authenticate, authController.me);
 router.post('/logout', authController.logout);

@@ -100,7 +100,7 @@ export default function DashboardLayout() {
 
   async function handleLogout() {
     await logout();
-    navigate(role === 'admin' ? '/admin/login' : role === 'worker' ? '/worker/login' : '/login');
+    navigate(role === 'worker' ? '/worker/login' : '/login');
   }
 
   const sidebar = (

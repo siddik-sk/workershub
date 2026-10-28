@@ -8,7 +8,6 @@ export const authApi = {
     }),
   loginCustomer: (payload) => api.post('/auth/login', payload),
   loginWorker: (payload) => api.post('/auth/login/worker', payload),
-  loginAdmin: (payload) => api.post('/auth/login/admin', payload),
   me: () => api.get('/auth/me'),
   logout: () => api.post('/auth/logout'),
   forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
