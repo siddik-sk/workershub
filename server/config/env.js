@@ -3,7 +3,13 @@ const dotenv = require('dotenv');
 
 dotenv.config({ path: path.join(__dirname, '..', '.env') });
 
-const required = ['MONGODB_URI', 'JWT_SECRET', 'CLIENT_URL'];
+// Render injects RENDER_EXTERNAL_URL for web services, so the public origin is
+// known without hard-coding it. CLIENT_URL stays supported for custom domains.
+const renderExternalUrl = (process.env.RENDER_EXTERNAL_URL || '').trim();
+const clientUrlSetting = (process.env.CLIENT_URL || renderExternalUrl || 'http://localhost:5173').trim();
+
+const required = ['MONGODB_URI', 'JWT_SECRET'];
+if (!process.env.CLIENT_URL && !renderExternalUrl) required.push('CLIENT_URL');
 const missing = required.filter((key) => !process.env[key]);
 
 if (missing.length && process.env.NODE_ENV === 'production') {
@@ -22,10 +28,10 @@ module.exports = {
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
   adminJwtExpiresIn: process.env.ADMIN_JWT_EXPIRES_IN || '12h',
-  clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
-  clientUrls: (process.env.CLIENT_URL || 'http://localhost:5173')
+  clientUrl: clientUrlSetting,
+  clientUrls: clientUrlSetting
     .split(',')
-    .map((url) => url.trim())
+    .map((url) => url.trim().replace(/\/+$/, ''))
     .filter(Boolean),
   uploadMaxBytes: Number(process.env.UPLOAD_MAX_BYTES || 2 * 1024 * 1024),
   adminName: process.env.ADMIN_NAME || 'Platform Administrator',

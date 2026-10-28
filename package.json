@@ -4,7 +4,7 @@
   "private": true,
   "description": "WorkConnect - local services booking platform",
   "scripts": {
-    "install:all": "npm install && npm --prefix server install && npm --prefix client install",
+    "install:all": "npm install --include=dev && npm --prefix server install --include=dev && npm --prefix client install --include=dev",
     "dev": "concurrently -n API,WEB -c cyan,magenta \"npm --prefix server run dev\" \"npm --prefix client run dev\"",
     "start": "npm --prefix server start",
     "build": "npm --prefix client run build",
@@ -13,5 +13,8 @@
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=20.19.0"
   }
 }

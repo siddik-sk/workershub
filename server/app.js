@@ -34,13 +34,34 @@ app.use(
   })
 );
 
+// The SPA and API share an origin in production, so requests from the app's own
+// origin are always allowed even before CLIENT_URL is updated after a rename.
+function isSameOriginRequest(req, origin) {
+  if (!origin) return false;
+  try {
+    const originUrl = new URL(origin);
+    const forwardedProto = String(req.headers['x-forwarded-proto'] || '')
+      .split(',')[0]
+      .trim();
+    const protocol = forwardedProto || req.protocol;
+    return originUrl.host === req.headers.host && originUrl.protocol === `${protocol}:`;
+  } catch {
+    return false;
+  }
+}
+
 app.use(
-  cors({
-    origin(origin, callback) {
-      if (!origin || config.clientUrls.includes(origin)) return callback(null, true);
+  cors((req, callback) => {
+    const origin = req.headers.origin;
+    const allowed =
+      !origin ||
+      config.clientUrls.includes(origin.replace(/\/+$/, '')) ||
+      isSameOriginRequest(req, origin);
+
+    if (!allowed) {
       return callback(new ApiError(403, 'This origin is not allowed to access the API', 'CORS_BLOCKED'));
-    },
-    credentials: true,
+    }
+    return callback(null, { origin: true, credentials: true });
   })
 );
 

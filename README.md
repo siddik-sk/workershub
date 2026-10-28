@@ -161,7 +161,7 @@ workershub/
 | `JWT_SECRET` | Yes | Signing secret, minimum 32 characters. |
 | `JWT_EXPIRES_IN` | No | Customer/worker session lifetime. Defaults to `7d`. |
 | `ADMIN_JWT_EXPIRES_IN` | No | Administrator session lifetime. Defaults to `12h`. |
-| `CLIENT_URL` | Yes | Allowed frontend origin(s). Comma-separate multiple origins. |
+| `CLIENT_URL` | Yes* | Allowed frontend origin(s), comma-separated. *On Render it is optional: the origin is derived from `RENDER_EXTERNAL_URL`, and same-origin requests are always allowed. |
 | `ADMIN_NAME` | No | Initial administrator display name. |
 | `ADMIN_EMAIL` | No | Initial administrator email used by `npm run seed`. |
 | `ADMIN_PASSWORD` | No | Initial administrator password used by `npm run seed`. |
@@ -293,13 +293,19 @@ The repository includes `render.yaml`, so Render can create the web service from
      | `NODE_ENV` | `production` |
      | `MONGODB_URI` | Your Atlas connection string, including `/workconnect` |
      | `JWT_SECRET` | A random secret of at least 32 characters |
-     | `CLIENT_URL` | `https://<your-service>.onrender.com` (add custom domains comma-separated) |
      | `UPLOAD_MAX_BYTES` | `2097152` (optional) |
+
+     `CLIENT_URL` is optional on Render: the API automatically derives its public
+     origin from Render's `RENDER_EXTERNAL_URL` and always accepts same-origin
+     requests. Set `CLIENT_URL` only when you attach a custom domain (comma-separate
+     multiple origins).
 
 4. **Deploy and verify**
    - Open `https://<your-service>.onrender.com/api/health` and confirm `database: "connected"`.
    - Sign in at `/login` with the Atlas administrator credentials.
-   - After the first deploy, confirm `CLIENT_URL` exactly matches the public HTTPS URL, then redeploy if you changed it.
+   - If the health check reports `database: "disconnected"`, allow Render's
+     outbound IPs in Atlas under **Network Access** (`0.0.0.0/0` for a free
+     cluster).
 
 Notes:
 

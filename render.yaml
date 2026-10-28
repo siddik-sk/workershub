@@ -3,6 +3,8 @@ services:
     name: workconnect
     runtime: node
     plan: free
+    # --include=dev is required because Render sets NODE_ENV=production during
+    # the build, which would otherwise skip Vite and the Tailwind toolchain.
     buildCommand: npm run install:all && npm run build
     startCommand: npm start
     healthCheckPath: /api/health
@@ -14,7 +16,7 @@ services:
         sync: false
       - key: JWT_SECRET
         generateValue: true
-      - key: CLIENT_URL
-        sync: false
       - key: UPLOAD_MAX_BYTES
         value: "2097152"
+      # CLIENT_URL is optional on Render: the app derives its public origin from
+      # RENDER_EXTERNAL_URL. Set it only when using a custom domain.
