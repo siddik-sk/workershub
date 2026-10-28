@@ -70,6 +70,7 @@ workershub/
 │   ├── .env.example
 │   └── app.js                  Express application
 ├── package.json                Root development scripts
+├── render.yaml                 Render Blueprint (optional one-click deploy)
 └── README.md
 ```
 
@@ -259,6 +260,52 @@ All responses use `{ success, message?, data? }`; errors use `{ success: false, 
 - Helmet security headers, an explicit CORS allowlist, request sanitisation and validation are applied.
 - Uploads accept only JPEG, PNG or WebP up to the configured size; generated filenames are random.
 - Password reset responses do not reveal whether an email exists. In non-production, the reset URL is returned for local testing because no email provider is configured.
+
+## Render deployment with MongoDB Atlas
+
+The repository includes `render.yaml`, so Render can create the web service from a Blueprint. The API and built React app run in one Node process.
+
+1. **Create the Atlas database**
+   - Create a free MongoDB Atlas cluster.
+   - Create a database user and allow network access. Render Free uses dynamic outbound IPs, so either allow `0.0.0.0/0` or configure Render's static outbound IPs on a paid plan.
+   - Copy the connection string and set `MONGODB_URI` in `server/.env`. The database name should be `workconnect` (or update it consistently).
+   - Seed the Atlas database once from your machine:
+
+     ```bash
+     cd server
+     npm run seed
+     ```
+
+     This creates the service categories, indexes and the administrator account configured by `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
+
+2. **Push the repository to GitHub.** Never commit `server/.env`; it is ignored.
+
+3. **Create the Render service**
+   - In Render, choose **New → Blueprint**, connect the repository and apply `render.yaml`.
+   - Or create a **Web Service** manually with:
+     - **Build command:** `npm run install:all && npm run build`
+     - **Start command:** `npm start`
+     - **Health check path:** `/api/health`
+   - Add these environment variables:
+
+     | Key | Value |
+     | --- | --- |
+     | `NODE_ENV` | `production` |
+     | `MONGODB_URI` | Your Atlas connection string, including `/workconnect` |
+     | `JWT_SECRET` | A random secret of at least 32 characters |
+     | `CLIENT_URL` | `https://<your-service>.onrender.com` (add custom domains comma-separated) |
+     | `UPLOAD_MAX_BYTES` | `2097152` (optional) |
+
+4. **Deploy and verify**
+   - Open `https://<your-service>.onrender.com/api/health` and confirm `database: "connected"`.
+   - Sign in at `/login` with the Atlas administrator credentials.
+   - After the first deploy, confirm `CLIENT_URL` exactly matches the public HTTPS URL, then redeploy if you changed it.
+
+Notes:
+
+- Uploaded profile images live on Render's ephemeral filesystem and are lost on redeploy or restart. Use a Render persistent disk (paid) or object storage for production uploads.
+- Render Free services spin down when idle; the first request after inactivity may be slow.
+- To change the administrator password later, run `npm --prefix server run create-admin -- --email <email> --update` locally against Atlas or use a Render shell.
 
 ## Production build and deployment
 
