@@ -4,7 +4,7 @@ WorkConnect is a full-stack local services booking platform. Customers discover 
 
 The application is not a static demo: accounts, sessions, bookings, notifications, reviews and analytics are persisted in MongoDB and all role permissions are enforced by the API.
 
-## Features
+## Features are
 
 ### Customers
 - Search approved professionals with filters for trade, city, locality, experience, price, rating and availability.
